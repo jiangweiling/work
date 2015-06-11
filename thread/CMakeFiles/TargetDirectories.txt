@@ -1,0 +1,2 @@
+/home/zhengyuhong/cmake/thread/src/CMakeFiles/hello.dir
+/home/zhengyuhong/cmake/thread/CMakeFiles/main.dir
