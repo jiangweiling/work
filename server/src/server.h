@@ -7,7 +7,6 @@
 namespace jsondb {
 
 using std::string;
-using std::pair;
 using socket_ns::Socket;
 using socket_ns::af_inet;
 using socket_ns::sock_stream;
@@ -24,7 +23,7 @@ public:
 	Server(const string& ip, unsigned short int port, int backlog);
 	Server(const Server& s);
 	Server& operator= (const Server& s);
-	void run();
+	int run();
 };
 
 };

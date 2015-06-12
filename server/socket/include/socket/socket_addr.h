@@ -13,6 +13,8 @@ private:
     unsigned short int m_port;
 public:
     SocketAddr();
+    SocketAddr(const SocketAddr& sa);
+    SocketAddr& operator= (const SocketAddr& sa);
     SocketAddr(int domain, const string& ip, unsigned short int port);
     SocketAddr(struct sockaddr_in addr);
     struct sockaddr *get_sockaddr_ptr() const;

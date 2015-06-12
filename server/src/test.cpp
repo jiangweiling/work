@@ -13,7 +13,7 @@ int main() {
 	thread t(bg);
 	t.join();
 	//t.detach();
-	//cout<<"test"<<endl;
+	cout<<"test"<<endl;
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	return 0;
 }

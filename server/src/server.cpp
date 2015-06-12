@@ -1,4 +1,3 @@
-#include <utility> //std::pair
 #include "server.h"
 
 namespace jsondb {
@@ -30,17 +29,22 @@ Server& Server::operator= (const Server& s){
 	return *this;
 }
 
-void Server::run(){
-	m_socket.bind(m_ip, m_port);
+int Server::run(){
+	if (-1 == m_socket.bind(m_ip, m_port)) {
+		std::cerr<<"bind fail\n";
+		std::cout<<"ip:"<<m_ip<<" port:"<<m_port<<'\n';
+		return -1;
+	}
 	m_socket.listen(m_backlog);
 	socket_ns::Address addr(m_socket.getsockname());
 	std::cout<<"ip:"<<addr.first<<" port:"<<addr.second<<'\n';
 	while(true) {
-		pair<Socket, Address> sa = m_socket.accept();
-		Socket sock(sa.first);
-		Address addr(sa.second);
+		Socket s = m_socket.accept();
+		Address addr(s.getpeername());
+		std::cout<<"peer addr: "<<addr.first<<" "<<addr.second<<"\n";
 		std::cout<<"accept()\n";
 	}
+	return 0;
 }
 
 };

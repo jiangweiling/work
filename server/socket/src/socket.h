@@ -14,6 +14,7 @@ private:
     SocketAddr m_sock_addr; //the socket’s own address
 private:
     void getsockaddr();
+    void getpeeraddr();
 public:
     Socket();
 	Socket(const Socket& s);
@@ -29,7 +30,7 @@ public:
     int connect(const string& ip, unsigned short int port);
     int connect(const char* ip, unsigned short int port);
     int listen(int backlog);
-    pair<Socket, Address> accept();
+    Socket accept();
     int send(const string& data);
     int recv(string& data);
     int close();

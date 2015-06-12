@@ -41,6 +41,8 @@ Socket::Socket(int domain, int type):
 	cerr<<"Socket(int,int)\n";
 }
 Socket::Socket(int socket_fd):m_socket_fd(socket_fd){
+	getsockaddr();
+	getpeeraddr();
 	cerr<<"Socket(int)\n";
 }
 int Socket::bind(const string& ip, unsigned short int port) {
@@ -80,7 +82,7 @@ int Socket::listen(int backlog) {
     return ::listen(m_socket_fd, backlog);
 }
 
-pair<Socket, Address> Socket::accept() {
+Socket Socket::accept() {
 	cerr<<"accept()\n";
     struct sockaddr_in addr;
     unsigned int size;
@@ -88,9 +90,9 @@ pair<Socket, Address> Socket::accept() {
     if(socket_fd != -1) {
         SocketAddr socket_addr(addr);
         Socket conn_socket(socket_fd);
-        return pair<Socket, Address>(move(conn_socket), socket_addr.get_address());
+        return conn_socket;
     }
-    return pair<Socket, Address>(Socket(), Address());
+    return Socket();
 }
 void Socket::getsockaddr() {
 	cerr<<"getsockaddr()\n";
@@ -105,6 +107,21 @@ void Socket::getsockaddr() {
         m_sock_addr = SocketAddr(m_domain, string(""), 0);
     }
 }
+
+void Socket::getpeeraddr() {
+	cerr<<"getpeeraddr()\n";
+    struct sockaddr_in addr;
+    unsigned int size = sizeof(addr);
+    ::memset(&addr, 0, size);
+    int ret = ::getpeername(m_socket_fd, (struct sockaddr *)&addr, &size);
+    if(ret == 0) {
+        m_peer_addr = SocketAddr(addr);
+    }
+    else{
+        m_peer_addr = SocketAddr(m_domain, string(""), 0);
+    }
+}
+
 Address Socket::getsockname() const {
 	cerr<<"getsockname\n";
     return m_sock_addr.get_address();
@@ -137,4 +154,4 @@ int Socket::close() {
     return ::close(m_socket_fd);
 }
 
-}
+};

@@ -12,12 +12,16 @@ private:
     int m_socket_fd; //socket file descriptor
     SocketAddr m_peer_addr; //the remote connected address
     SocketAddr m_sock_addr; //the socket’s own address
+private:
     void getsockaddr();
+    void getpeeraddr();
 public:
+    Socket();
+	Socket(const Socket& s);
+	Socket& operator=(const Socket& s);
     Socket(int domain, int type, int protocol);
     Socket(int domain, int type);
     Socket(int socket_fd);
-    Socket();
     ~Socket();
     int bind(const string& ip, unsigned short int port);
     int bind(const char* ip, unsigned short int port);
@@ -26,7 +30,7 @@ public:
     int connect(const string& ip, unsigned short int port);
     int connect(const char* ip, unsigned short int port);
     int listen(int backlog);
-    pair<Socket, Address> accept();
+    Socket accept();
     int send(const string& data);
     int recv(string& data);
     int close();

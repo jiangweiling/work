@@ -22,6 +22,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 build : $(OBJS)
+	cp ./*.h ../include/socket
 	rm -f $(LIB_DIR)/libsocket.a
 	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/socket.o $(OBJ_DIR)/socket_addr.o
 
@@ -33,5 +34,8 @@ clean:
 cleanall:
 	rm -f *~
 	rm -f $(SRC_DIR)/*~
-	rm -rf $(OBJ_DIR)
+	rm -f $(OBJ_DIR)/*
+	rmdir $(OBJ_DIR)
 	rm -f $(TARGET)
+	rm -f $(LIB_DIR)/*
+	rmdir $(LIB_DIR)
