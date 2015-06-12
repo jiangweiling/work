@@ -30,14 +30,14 @@ Socket::Socket(int domain, int type, int protocol):
     m_domain(domain), 
     m_type(type), 
     m_protocol(protocol), 
-    m_socket_fd(::socket(domain, type, protocol)){
+    m_socket_fd(::socket(domain, type, protocol)){  // sys/socket.h
 	cerr<<"Socket(int,int,int)\n";
 }
 Socket::Socket(int domain, int type):
     m_domain(domain), 
     m_type(type), 
     m_protocol(0), 
-    m_socket_fd(::socket(domain, type, 0)){
+    m_socket_fd(::socket(domain, type, 0)){  // sys/socket.h
 	cerr<<"Socket(int,int)\n";
 }
 Socket::Socket(int socket_fd):m_socket_fd(socket_fd){
@@ -45,9 +45,14 @@ Socket::Socket(int socket_fd):m_socket_fd(socket_fd){
 	getpeeraddr();
 	cerr<<"Socket(int)\n";
 }
+int Socket::get_fd() const {
+	return m_socket_fd;
+}
 int Socket::bind(const string& ip, unsigned short int port) {
     SocketAddr addr(m_domain, ip, port);
-    int ret = ::bind(m_socket_fd, addr.get_sockaddr_ptr(), addr.get_sockaddr_size());
+    int ret = ::bind(m_socket_fd, 
+			addr.get_sockaddr_ptr(), 
+			addr.get_sockaddr_size()); // sys/socket.h
     getsockaddr();
 	cerr<<"bind(const string&, unsigned short)\n";
     return ret;
@@ -67,7 +72,9 @@ int Socket::bind(const char* ip) {
 
 int Socket::connect(const string& ip, unsigned short int port) {
     m_peer_addr = SocketAddr(m_domain, ip, port);
-    int ret = ::connect(m_socket_fd, m_peer_addr.get_sockaddr_ptr(), m_peer_addr.get_sockaddr_size());
+    int ret = ::connect(m_socket_fd, 
+			m_peer_addr.get_sockaddr_ptr(), 
+			m_peer_addr.get_sockaddr_size()); // sys/socket.h
     getsockaddr();
 	cerr<<"connect(const string&, unsigned short)\n";
     return ret;
@@ -79,14 +86,14 @@ int Socket::connect(const char* ip, unsigned short int port) {
 
 int Socket::listen(int backlog) {
 	cerr<<"listen(int)\n";
-    return ::listen(m_socket_fd, backlog);
+    return ::listen(m_socket_fd, backlog); // sys/socket.h
 }
 
 Socket Socket::accept() {
 	cerr<<"accept()\n";
-    struct sockaddr_in addr;
+    struct sockaddr_in addr; // netinet/in.h
     unsigned int size;
-    int socket_fd = ::accept(m_socket_fd, (struct sockaddr *)&addr, &size);    
+    int socket_fd = ::accept(m_socket_fd, (struct sockaddr *)&addr, &size); // sys/socket.h
     if(socket_fd != -1) {
         SocketAddr socket_addr(addr);
         Socket conn_socket(socket_fd);
@@ -96,9 +103,9 @@ Socket Socket::accept() {
 }
 void Socket::getsockaddr() {
 	cerr<<"getsockaddr()\n";
-    struct sockaddr_in addr;
+    struct sockaddr_in addr; // netinet/in.h
     unsigned int size = sizeof(addr);
-    ::memset(&addr, 0, size);
+    ::memset(&addr, 0, size); // cstring
     int ret = ::getsockname(m_socket_fd, (struct sockaddr *)&addr, &size);
     if(ret == 0) {
         m_sock_addr = SocketAddr(addr);
@@ -110,9 +117,9 @@ void Socket::getsockaddr() {
 
 void Socket::getpeeraddr() {
 	cerr<<"getpeeraddr()\n";
-    struct sockaddr_in addr;
+    struct sockaddr_in addr; // netinet/in.h
     unsigned int size = sizeof(addr);
-    ::memset(&addr, 0, size);
+    ::memset(&addr, 0, size); // cstring
     int ret = ::getpeername(m_socket_fd, (struct sockaddr *)&addr, &size);
     if(ret == 0) {
         m_peer_addr = SocketAddr(addr);
@@ -133,12 +140,12 @@ Address Socket::getpeername() const {
 int Socket::send(const string& data) {
 	cerr<<"send(cosnt string&)\n";
     const char* str = data.c_str();
-    return ::send(m_socket_fd, str, strlen(str)+1, 0);
+    return ::send(m_socket_fd, str, strlen(str)+1, 0); // sys/socket.h
 }
 int Socket::recv(string& data) {
 	cerr<<"recv(string&)\n";
     char buffer[buf_size];
-    int ret = ::recv(m_socket_fd, buffer, buf_size, 0);
+    int ret = ::recv(m_socket_fd, buffer, buf_size, 0);  // sys/socket.h
     data = string(buffer);
     return ret;
 }
@@ -151,7 +158,27 @@ int Socket::close() {
     if (m_socket_fd == -1) {
         return -1;
     }
-    return ::close(m_socket_fd);
+    return ::close(m_socket_fd); // unistd.h
+}
+
+int Socket::setblocking(bool block) {
+	int flags;
+	flags = fcntl(m_socket_fd, F_GETFL, 0);
+	if (-1 == flags) {
+		cerr<<"Socket::setblocking error\n";
+		return -1;
+	}
+	if(block){/*set block*/
+		flags &= (~O_NONBLOCK);
+	}
+	else{
+		flags |= O_NONBLOCK;
+	}
+	if (-1 == fcntl(m_socket_fd, F_SETFL, flags)) {
+		cerr<<"Socket::setblocking error\n";
+		return -1;
+	}
+	return 0;
 }
 
 };

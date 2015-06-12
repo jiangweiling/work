@@ -43,6 +43,7 @@ int Server::run(){
 		Address addr(s.getpeername());
 		std::cout<<"peer addr: "<<addr.first<<" "<<addr.second<<"\n";
 		std::cout<<"accept()\n";
+		break;
 	}
 	return 0;
 }

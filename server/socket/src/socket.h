@@ -23,6 +23,7 @@ public:
     Socket(int domain, int type);
     Socket(int socket_fd);
     ~Socket();
+	int get_fd() const;
     int bind(const string& ip, unsigned short int port);
     int bind(const char* ip, unsigned short int port);
     int bind(const string& ip);
@@ -34,6 +35,7 @@ public:
     int send(const string& data);
     int recv(string& data);
     int close();
+	int setblocking(bool block);
     Address getsockname() const;
     Address getpeername() const;
 };
