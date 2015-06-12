@@ -4,7 +4,7 @@ STD = -std=c++11
 INCLUDE = -I./leveldb/include -I./socket/include
 CXXFLAGS = $(STD) -g -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L./leveldb/lib -L./socket/lib -lleveldb -lsocket
+LIBS = -L./leveldb/lib -L./socket/lib -lleveldb -lsocket -lpthread
 LDFLAGS = $(STD) $(LIBS)
 
 SRC_DIR = ./src

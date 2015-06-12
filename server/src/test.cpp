@@ -1,14 +1,16 @@
 #include "server.h"
+#include <iostream>
 #include <thread>
 #include <chrono>
 using std::thread;
 using std::cout;
 using std::endl;
 using jsondb::Server;
-auto bg = [](Server& s){s.run();};
+
 int main() {
 	Server s;
-	thread t(bg, s);
+	auto bg = [&s](){s.run();};
+	thread t(bg);
 	t.join();
 	//t.detach();
 	//cout<<"test"<<endl;

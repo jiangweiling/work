@@ -3,7 +3,17 @@
 
 namespace jsondb {
 
-Server::Server():m_socket(af_inet, sock_stream) {
+Server::Server():
+	m_ip("127.0.0.1"),
+	m_port(8888),
+	m_socket(af_inet, sock_stream),
+	m_backlog(5){
+}
+Server::Server(const string& ip, unsigned short int port, int backlog):
+	m_ip(ip),
+	m_port(port),
+	m_socket(af_inet, sock_stream),
+	m_backlog(backlog){
 }
 Server::Server(const Server& s):
 	m_ip(s.m_ip),
@@ -21,8 +31,7 @@ Server& Server::operator= (const Server& s){
 }
 
 void Server::run(){
-	m_backlog = 5;
-	m_socket.bind("127.0.0.1",9999);
+	m_socket.bind(m_ip, m_port);
 	m_socket.listen(m_backlog);
 	socket_ns::Address addr(m_socket.getsockname());
 	std::cout<<"ip:"<<addr.first<<" port:"<<addr.second<<'\n';
@@ -31,7 +40,6 @@ void Server::run(){
 		Socket sock(sa.first);
 		Address addr(sa.second);
 		std::cout<<"accept()\n";
-		break;
 	}
 }
 

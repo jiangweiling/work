@@ -21,6 +21,7 @@ private:
 	int m_backlog;
 public:
 	Server();
+	Server(const string& ip, unsigned short int port, int backlog);
 	Server(const Server& s);
 	Server& operator= (const Server& s);
 	void run();
