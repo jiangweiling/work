@@ -1,6 +1,6 @@
 CXX = g++
-STD =
-#STD = -std=c++11
+#STD =
+STD = -std=c++11
 INCLUDE = -I.
 CXXFLAGS = $(STD) -g -Wall $(INCLUDE)
 LD = $(CXX)
@@ -10,8 +10,10 @@ LDFLAGS = $(STD) $(LIBS)
 TARGET = main
 SRC_DIR = .
 OBJ_DIR = ./objs
+LIB_DIR = ../lib
 
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))
+MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
 OBJS = $(addsuffix .o, $(subst $(SRC_DIR),$(OBJ_DIR),$(basename $(wildcard $(SRC_DIR)/*.cpp))))
 
 $(TARGET): $(OBJS)
@@ -20,6 +22,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 build : $(OBJS)
+	ar -r $(LIB_DIR)/libsocket.a $^
 
 .PHONY : clean cleanall
 clean:
