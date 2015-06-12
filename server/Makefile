@@ -1,7 +1,7 @@
 CXX = g++
 STD = -std=c++11
 #STD =
-INCLUDE = -I.
+INCLUDE = -I./include
 CXXFLAGS = $(STD) -g -O2 -Wall $(INCLUDE)
 LD = $(CXX)
 LIBS = -L.
