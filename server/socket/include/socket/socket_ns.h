@@ -11,21 +11,23 @@
 #include <string> 
 #include <iostream>
 
+
+namespace socket_ns {
+
 using std::string;
 using std::pair;
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::memset;
-
-namespace socket_ns {
+using std::move;
 
 const int af_inet = AF_INET;
 const int sock_stream = SOCK_STREAM;
 const int sock_dgram = SOCK_DGRAM;
 const int buf_size = 1024;
 
-typedef pair<string, int> Address;
+typedef pair<string, unsigned short int> Address;
 
 };
 

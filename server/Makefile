@@ -4,12 +4,12 @@ STD = -std=c++11
 INCLUDE = -I./leveldb/include -I./socket/include 
 CXXFLAGS = $(STD) -g -O2 -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L./leveldb/lib -L./socket/lib -lleveldb -lsocket
+LIBS = -L./leveldb/lib -L./socket/lib -lleveldb -lsocket -lpthread
 LDFLAGS = $(STD) $(LIBS)
 
-TARGET = server
 SRC_DIR = ./src
 OBJ_DIR = ./objs
+TARGET = $(OBJ_DIR)/test
 
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))
 OBJS = $(addsuffix .o, $(subst $(SRC_DIR),$(OBJ_DIR),$(basename $(wildcard $(SRC_DIR)/*.cpp))))

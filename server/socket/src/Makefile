@@ -22,8 +22,8 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 build : $(OBJS)
-	rm $(LIB_DIR)/libsocket.a
-	ar -r $(LIB_DIR)/libsocket.a $^
+	rm -f $(LIB_DIR)/libsocket.a
+	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/socket.o $(OBJ_DIR)/socket_addr.o
 
 .PHONY : clean cleanall
 clean:

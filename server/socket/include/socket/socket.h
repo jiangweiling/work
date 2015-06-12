@@ -19,16 +19,20 @@ public:
     Socket(int socket_fd);
     Socket();
     ~Socket();
-    int bind(string ip, unsigned short int port);
-    int bind(string ip);
-    int connect(string ip, unsigned short int port);
+    int bind(const string& ip, unsigned short int port);
+    int bind(const char* ip, unsigned short int port);
+    int bind(const string& ip);
+    int bind(const char* ip);
+    int connect(const string& ip, unsigned short int port);
+    int connect(const char* ip, unsigned short int port);
     int listen(int backlog);
     pair<Socket, Address> accept();
-    int send(string data);
+    int send(const string& data);
     int recv(string& data);
     int close();
     Address getsockname() const;
     Address getpeername() const;
 };
+
 };
 #endif //SOCKET_H
