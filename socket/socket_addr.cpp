@@ -8,7 +8,7 @@ SocketAddr::SocketAddr(int domain, string ip, unsigned short int port):
     m_ip(ip),
     m_port(port){
     ::memset((&m_addr), 0, sizeof(m_addr));
-    m_addr.sin_family = AF_INET;
+    m_addr.sin_family = af_inet;
     m_addr.sin_port = ::htons(port);
     m_addr.sin_addr.s_addr = ::inet_addr(ip.c_str());
     m_size = sizeof(m_addr);
