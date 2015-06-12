@@ -1,14 +1,14 @@
 CXX = g++
 STD = -std=c++11
 #STD =
-INCLUDE = -I./include
+INCLUDE = -I./leveldb/include -I./socket/include 
 CXXFLAGS = $(STD) -g -O2 -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L.
+LIBS = -L./leveldb/lib -L./socket/lib -lleveldb -lsocket
 LDFLAGS = $(STD) $(LIBS)
 
-TARGET = main
-SRC_DIR = .
+TARGET = server
+SRC_DIR = ./src
 OBJ_DIR = ./objs
 
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))

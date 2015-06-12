@@ -13,7 +13,7 @@ private:
     unsigned short int m_port;
 public:
     SocketAddr();
-    SocketAddr(int domain, string ip, unsigned short int port);
+    SocketAddr(int domain, const string& ip, unsigned short int port);
     SocketAddr(struct sockaddr_in addr);
     struct sockaddr *get_sockaddr_ptr() const;
     unsigned int get_sockaddr_size() const;

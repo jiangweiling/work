@@ -3,7 +3,7 @@ namespace socket_ns {
 
 SocketAddr::SocketAddr() {
 }
-SocketAddr::SocketAddr(int domain, string ip, unsigned short int port):
+SocketAddr::SocketAddr(int domain,const string& ip, unsigned short int port):
     m_domain(domain),
     m_ip(ip),
     m_port(port){
@@ -29,7 +29,7 @@ unsigned int SocketAddr::get_sockaddr_size() const {
 }
 
 Address SocketAddr::get_address() const {
-    return Address(m_ip, m_port);
+    return move(Address(m_ip, m_port));
 }
 
 };

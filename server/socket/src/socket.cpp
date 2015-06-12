@@ -17,21 +17,30 @@ Socket::Socket(int socket_fd):m_socket_fd(socket_fd){
 }
 Socket::Socket():m_socket_fd(-1){
 }
-int Socket::bind(string ip, unsigned short int port) {
+int Socket::bind(const string& ip, unsigned short int port) {
     SocketAddr addr(m_domain, ip, port);
     int ret = ::bind(m_socket_fd, addr.get_sockaddr_ptr(), addr.get_sockaddr_size());
     Socket::getsockaddr();
     return ret;
 }
-int Socket::bind(string ip) {
+int Socket::bind(const char* ip, unsigned short int port) {
+	return bind(string(ip), port);
+}
+int Socket::bind(const string& ip) {
     return Socket::bind(ip, 0);
 }
+int Socket::bind(const char* ip) {
+	return bind(string(ip));
+}
 
-int Socket::connect(string ip, unsigned short int port) {
+int Socket::connect(const string& ip, unsigned short int port) {
     m_peer_addr = SocketAddr(m_domain, ip, port);
     int ret = ::connect(m_socket_fd, m_peer_addr.get_sockaddr_ptr(), m_peer_addr.get_sockaddr_size());
     Socket::getsockaddr();
     return ret;
+}
+int Socket::connect(const char* ip, unsigned short int port) {
+	return connect(string(ip), port);
 }
 
 int Socket::listen(int backlog) {
@@ -45,7 +54,7 @@ pair<Socket, Address> Socket::accept() {
     if(socket_fd != -1) {
         SocketAddr socket_addr(addr);
         Socket conn_socket(socket_fd);
-        return pair<Socket, Address>(conn_socket,socket_addr.get_address());
+        return pair<Socket, Address>(move(conn_socket), socket_addr.get_address());
     }
     return pair<Socket, Address>(Socket(), Address());
 }
@@ -67,7 +76,7 @@ Address Socket::getsockname() const {
 Address Socket::getpeername() const {
     return m_peer_addr.get_address();
 }
-int Socket::send(string data) {
+int Socket::send(const string& data) {
     const char* str = data.c_str();
     return ::send(m_socket_fd, str, strlen(str)+1, 0);
 }
@@ -78,7 +87,7 @@ int Socket::recv(string& data) {
     return ret;
 }
 Socket::~Socket() {
-    Socket::close();
+    close();
 }
 int Socket::close() {
     if (m_socket_fd == -1) {

@@ -6,12 +6,12 @@ namespace socket_ns {
 
 class Socket {
 private:
-    int m_domain;
-    int m_type;
-    int m_protocol;
-    int m_socket_fd;
-    SocketAddr m_peer_addr;
-    SocketAddr m_sock_addr;
+    int m_domain; //address family,socket_ns::af_inet as default
+    int m_type; //socket type, socket_ns::sock_stream as default
+    int m_protocol; //protocol num, 0 as default 
+    int m_socket_fd; //socket file descriptor
+    SocketAddr m_peer_addr; //the remote connected address
+    SocketAddr m_sock_addr; //the socket’s own address
     void getsockaddr();
 public:
     Socket(int domain, int type, int protocol);
@@ -19,12 +19,15 @@ public:
     Socket(int socket_fd);
     Socket();
     ~Socket();
-    int bind(string ip, unsigned short int port);
-    int bind(string ip);
-    int connect(string ip, unsigned short int port);
+    int bind(const string& ip, unsigned short int port);
+    int bind(const char* ip, unsigned short int port);
+    int bind(const string& ip);
+    int bind(const char* ip);
+    int connect(const string& ip, unsigned short int port);
+    int connect(const char* ip, unsigned short int port);
     int listen(int backlog);
     pair<Socket, Address> accept();
-    int send(string data);
+    int send(const string& data);
     int recv(string& data);
     int close();
     Address getsockname() const;
