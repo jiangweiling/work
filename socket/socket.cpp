@@ -72,8 +72,8 @@ int Socket::send(string data) {
     return ::send(m_socket_fd, str, strlen(str)+1, 0);
 }
 int Socket::recv(string& data) {
-    char buffer[BUFSIZE];
-    int ret = ::recv(m_socket_fd, buffer, BUFSIZE, 0);
+    char buffer[buf_size];
+    int ret = ::recv(m_socket_fd, buffer, buf_size, 0);
     data = string(buffer);
     return ret;
 }
