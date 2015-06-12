@@ -10,10 +10,10 @@ LDFLAGS = $(STD) $(LIBS)
 TARGET = main
 SRC_DIR = .
 OBJ_DIR = ./objs
-LIB_DIR = ../lib
+LIB_DIR = ./lib
 
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))
-MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
+#MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
 OBJS = $(addsuffix .o, $(subst $(SRC_DIR),$(OBJ_DIR),$(basename $(wildcard $(SRC_DIR)/*.cpp))))
 
 $(TARGET): $(OBJS)
@@ -22,8 +22,8 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 build : $(OBJS)
-	rm -f $(LIB_DIR)/libsocket.a
-	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/socket.o $(OBJ_DIR)/socket_addr.o
+#rm -f $(LIB_DIR)/libsocket.a
+#ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/socket.o $(OBJ_DIR)/socket_addr.o
 
 .PHONY : clean cleanall
 clean:
