@@ -1,13 +1,13 @@
 CXX = g++
 #STD =
 STD = -std=c++11
-INCLUDE = -I.
+INCLUDE = -I./leveldb/include -I./socket/include
 CXXFLAGS = $(STD) -g -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L.
+LIBS = -L./leveldb/lib -L./socket/lib -lleveldb -lsocket
 LDFLAGS = $(STD) $(LIBS)
 
-SRC_DIR = .
+SRC_DIR = ./src
 OBJ_DIR = ./objs
 LIB_DIR = $(OBJ_DIR)/lib
 TARGET = $(OBJ_DIR)/test
