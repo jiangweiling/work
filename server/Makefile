@@ -1,17 +1,19 @@
 CXX = g++
-STD = -std=c++11
 #STD =
-INCLUDE = -I./leveldb/include -I./socket/include 
-CXXFLAGS = $(STD) -g -O2 -Wall $(INCLUDE)
+STD = -std=c++11
+INCLUDE = -I.
+CXXFLAGS = $(STD) -g -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L./leveldb/lib -L./socket/lib -lleveldb -lsocket -lpthread
+LIBS = -L.
 LDFLAGS = $(STD) $(LIBS)
 
-SRC_DIR = ./src
+SRC_DIR = .
 OBJ_DIR = ./objs
+LIB_DIR = $(OBJ_DIR)/lib
 TARGET = $(OBJ_DIR)/test
 
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))
+MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
 OBJS = $(addsuffix .o, $(subst $(SRC_DIR),$(OBJ_DIR),$(basename $(wildcard $(SRC_DIR)/*.cpp))))
 
 $(TARGET): $(OBJS)
@@ -20,15 +22,16 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 build : $(OBJS)
+	rm -f $(LIB_DIR)/libsocket.a
+	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/socket.o $(OBJ_DIR)/socket_addr.o
 
 .PHONY : clean cleanall
 clean:
-	@echo "rm -f $(OBJ_DIR)/*"
+	@echo "rm -rf $(OBJ_DIR)"
 	@echo "rm -f $(TARGET)"
 	@echo "make cleanall = rm -rf $(TARGET) $(OBJ_DIR)"
 cleanall:
 	rm -f *~
 	rm -f $(SRC_DIR)/*~
-	rm -f $(OBJ_DIR)/*
-	rmdir $(OBJ_DIR)
+	rm -rf $(OBJ_DIR)
 	rm -f $(TARGET)
