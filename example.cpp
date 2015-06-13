@@ -31,17 +31,13 @@ public:
 		cout<<"A(A&&)\n";
 	}
 };
-void print(int && v) {
-	cout<<"int &&v"<<endl;
+void print(string && v) {
+	cout<<"int &&v"<<v<<endl;
 }
-void print(int & v) {
-	cout<<"int &v"<<endl;
-}
-template<typename T>
-void test(T && v){
-	print(std::forward<T>(v));
-	cout<<endl;
+void print(string & v) {
+	cout<<"int &v"<<v<<endl;
 }
 int main() {
+	print(std::move(string("aaa")));
 	return 0;
 }
