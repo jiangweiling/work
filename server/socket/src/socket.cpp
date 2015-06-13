@@ -163,18 +163,18 @@ int Socket::close() {
 
 int Socket::setblocking(bool block) {
 	int flags;
-	flags = fcntl(m_socket_fd, F_GETFL, 0);
+	flags = fcntl(m_socket_fd, F_GETFL, 0);  // fcntl.h
 	if (-1 == flags) {
 		cerr<<"Socket::setblocking error\n";
 		return -1;
 	}
-	if(block){/*set block*/
+	if(block){ //set block
 		flags &= (~O_NONBLOCK);
 	}
 	else{
 		flags |= O_NONBLOCK;
 	}
-	if (-1 == fcntl(m_socket_fd, F_SETFL, flags)) {
+	if (-1 == fcntl(m_socket_fd, F_SETFL, flags)) {  // fcntl.h
 		cerr<<"Socket::setblocking error\n";
 		return -1;
 	}
