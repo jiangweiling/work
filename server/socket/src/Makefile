@@ -7,7 +7,7 @@ LD = $(CXX)
 LIBS = -L.
 LDFLAGS = $(STD) $(LIBS)
 
-TARGET = main
+TARGET = test
 SRC_DIR = .
 OBJ_DIR = ./objs
 LIB_DIR = ../lib
@@ -24,7 +24,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 build : $(OBJS)
 	cp ./*.h ../include/socket
 	rm -f $(LIB_DIR)/libsocket.a
-	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/socket.o $(OBJ_DIR)/socket_addr.o
+	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/unique_socket.o $(OBJ_DIR)/socket_addr.o
 
 .PHONY : clean cleanall
 clean:

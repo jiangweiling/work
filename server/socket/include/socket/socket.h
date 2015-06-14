@@ -2,43 +2,52 @@
 #define SOCKET_H
 #include "socket_ns.h"
 #include "socket_addr.h"
+#include "unique_socket.h"
+
 namespace socket_ns {
 
 class Socket {
 private:
-    int m_domain; //address family,socket_ns::af_inet as default
-    int m_type; //socket type, socket_ns::sock_stream as default
-    int m_protocol; //protocol num, 0 as default 
-    int m_socket_fd; //socket file descriptor
-    SocketAddr m_peer_addr; //the remote connected address
-    SocketAddr m_sock_addr; //the socket’s own address
-private:
-    void getsockaddr();
-    void getpeeraddr();
+	shared_ptr<UniqueSocket> socket_ptr;
 public:
     Socket();
-	Socket(const Socket& s);
-	Socket& operator=(const Socket& s);
     Socket(int domain, int type, int protocol);
     Socket(int domain, int type);
     Socket(int socket_fd);
-    ~Socket();
-	int get_fd() const;
-    int bind(const string& ip, unsigned short int port);
+
+	Socket(const UniqueSocket& s) = delete;
+	Socket(UniqueSocket&& s);
+	Socket& operator=(const UniqueSocket& s) = delete;
+	Socket& operator=(UniqueSocket&& s);
+
     int bind(const char* ip, unsigned short int port);
+    int bind(const string& ip, unsigned short int port);
+    int bind(string&& ip, unsigned short int port);
     int bind(const string& ip);
+    int bind(string&& ip);
     int bind(const char* ip);
-    int connect(const string& ip, unsigned short int port);
     int connect(const char* ip, unsigned short int port);
+    int connect(const string& ip, unsigned short int port);
+    int connect(string&& ip, unsigned short int port);
     int listen(int backlog);
+    int listen();
     Socket accept();
-    int send(const string& data);
-    int recv(string& data);
-    int close();
 	int setblocking(bool block);
+	bool block();
+    int send(const string& data) const;
+    int send(string&& data) const;
+    int recv(string& data) const;
+	int get_fd() const;
     Address getsockname() const;
     Address getpeername() const;
 };
 
 };
-#endif //SOCKET_H
+
+namespace socket_ns {
+
+ostream& operator<< (ostream& os, const Socket& s);
+ostream& operator<< (ostream& os, Socket&& s);
+
+};
+#endif //UNIQUE_SOCKET_H

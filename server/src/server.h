@@ -1,10 +1,10 @@
 #ifndef SERVER_H
 #define SERVER_H
 #include <socket/socket.h>
-
+#include "jsondb_ns.h"
 #include <string>
 
-namespace jsondb {
+namespace jsondb_ns {
 
 using std::string;
 using socket_ns::Socket;
@@ -18,11 +18,20 @@ private:
 	unsigned short int m_port;
 	Socket m_socket;
 	int m_backlog;
-public:
-	Server();
+private:
+	static bool initial; 
+	static Server server;
+private:
+	Server()=default;
 	Server(const string& ip, unsigned short int port, int backlog);
-	Server(const Server& s);
-	Server& operator= (const Server& s);
+	Server(string&& ip, unsigned short int port, int backlog);
+	Server& operator= (Server&& s);
+public:
+	Server& operator= (const Server& s) = delete;
+	Server(const Server& s) = delete;
+	static Server& get_server(const string& ip, unsigned short int port, int backlog);
+	static Server& get_server(string&& ip, unsigned short int port, int backlog);
+	static Server& get_server();
 	int run();
 };
 

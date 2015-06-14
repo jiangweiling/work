@@ -12,7 +12,7 @@ OBJ_DIR = ./objs
 TARGET = $(OBJ_DIR)/test
 
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))
-MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
+#MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
 OBJS = $(addsuffix .o, $(subst $(SRC_DIR),$(OBJ_DIR),$(basename $(wildcard $(SRC_DIR)/*.cpp))))
 
 $(TARGET): $(OBJS)

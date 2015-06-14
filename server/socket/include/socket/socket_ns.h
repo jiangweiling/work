@@ -10,22 +10,26 @@
 #include <cstring> 
 #include <utility> 
 #include <string> 
+#include <memory>
 #include <iostream>
 
 
 namespace socket_ns {
 
-using std::string;
-using std::pair;
-using std::cout;
-using std::cerr;
-using std::endl;
-using std::memset;
-using std::move;
+using std::string;        // string
+using std::pair;          // utility
+using std::cout;          // iostream
+using std::cerr;          // iostream
+using std::endl;          // iostream
+using std::memset;        // cstring
+using std::memcpy;        // cstring
+using std::move;          // utility
+using std::ostream;       //iostream
+using std::shared_ptr;    //memory
 
-const int af_inet = AF_INET;
-const int sock_stream = SOCK_STREAM;
-const int sock_dgram = SOCK_DGRAM;
+const int af_inet = AF_INET;           // sys/socket.h
+const int sock_stream = SOCK_STREAM;   // sys/socket.h
+const int sock_dgram = SOCK_DGRAM;     // sys/socket.h
 const int buf_size = 1024;
 
 typedef pair<string, unsigned short int> Address;
