@@ -1,11 +1,11 @@
-#include "server.h"
+#include <socket/server.h>
 #include <iostream>
 #include <thread>
 #include <chrono>
 using std::thread;
 using std::cout;
 using std::endl;
-using jsondb_ns::Server;
+using socket_ns::Server;
 
 int main() {
 	Server& s = Server::get_server();

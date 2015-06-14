@@ -18,8 +18,7 @@ private:
     void getpeeraddr();
 public:
     UniqueSocket();
-    UniqueSocket(int domain, int type, int protocol);
-    UniqueSocket(int domain, int type);
+    UniqueSocket(int domain, int type, int protocol=0);
     UniqueSocket(int socket_fd);
 
 	UniqueSocket(const UniqueSocket& s) = delete;

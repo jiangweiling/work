@@ -4,7 +4,7 @@ STD = -std=c++11
 INCLUDE = -I.
 CXXFLAGS = $(STD) -g -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L.
+LIBS = -L. -lpthread
 LDFLAGS = $(STD) $(LIBS)
 
 TARGET = test
@@ -24,7 +24,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 build : $(OBJS)
 	cp ./*.h ../include/socket
 	rm -f $(LIB_DIR)/libsocket.a
-	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/unique_socket.o $(OBJ_DIR)/socket_addr.o $(OBJ_DIR)/socket.o
+	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/unique_socket.o $(OBJ_DIR)/socket_addr.o $(OBJ_DIR)/socket.o $(OBJ_DIR)/server.o
 
 .PHONY : clean cleanall
 clean:

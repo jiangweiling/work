@@ -14,7 +14,7 @@ private:
 private:
 	void m_addr_ctor(int domain, const char* ip, unsigned short int port);
 public:
-    SocketAddr();
+	SocketAddr();
     SocketAddr(int domain, const string& ip, unsigned short int port);
     SocketAddr(int domain, const char* ip, unsigned short int port);
     SocketAddr(int domain, string&& ip, unsigned short int port);

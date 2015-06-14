@@ -27,19 +27,6 @@ UniqueSocket::UniqueSocket(int domain, int type, int protocol):
 	cerr<<"UniqueSocket::UniqueSocket(int domain, int type, int protocol)exit\n";
 }
 
-UniqueSocket::UniqueSocket(int domain, int type):
-    m_domain(domain), 
-    m_type(type), 
-    m_protocol(0), 
-    m_socket_fd(::socket(domain, type, 0)),  // sys/socket.h
-	m_block(true) {
-	cerr<<"UniqueSocket::UniqueSocket(int domain, int type)\n";
-	if(0!=errno) {
-		cerr<<strerror(errno);
-	}
-	cerr<<"UniqueSocket::UniqueSocket(int domain, int type)exit\n";
-}
-
 UniqueSocket::UniqueSocket(int socket_fd):
 	m_domain(af_inet),   // socket_ns::af_inet
 	m_type(sock_stream), // socket_ns::sock_stream
@@ -104,7 +91,7 @@ int UniqueSocket::bind(const char* ip, unsigned short int port) {
     getsockaddr();
 	if(0!=ret || 0!=errno) {
 		cerr<<*this<<endl;
-		cerr<<strerror(errno);
+		cerr<<strerror(errno)<<endl;
 	}
 	cerr<<"int UniqueSocket::bind(const char* ip, unsigned short int port)exit\n";
 	return ret;
@@ -167,10 +154,12 @@ int UniqueSocket::listen() {
 int UniqueSocket::accept() {
 	cerr<<"int UniqueSocket::accept()\n";
     struct sockaddr_in addr; // netinet/in.h
-    unsigned int size;
+    unsigned int size = sizeof(addr);
     int socket_fd = ::accept(m_socket_fd, (struct sockaddr *)&addr, &size); // sys/socket.h
     if(-1==socket_fd or 0!=errno) {
-		cerr<<strerror(errno)<<endl;
+		cerr<<strerror(errno)<<endl
+			<<"m_socket_fd = "<<m_socket_fd<<endl
+			<<"socket_fd = "<<socket_fd<<endl;
     }
 	cerr<<"int UniqueSocket::accept()exit\n";
     return socket_fd;
@@ -231,6 +220,7 @@ int UniqueSocket::send(const char* data) const{
 	cerr<<"int UniqueSocket::send(const char* data) const exit\n";
     return ret;
 }
+
 int UniqueSocket::send(const string& data) const{
 	return send(data.c_str());
 }
@@ -260,7 +250,7 @@ int UniqueSocket::close() {
 	if(0!=errno) {
 		cerr<<strerror(errno)<<endl;	
 	}
-	cerr<<"int UniqueSocket::close()\n";
+	cerr<<"int UniqueSocket::close()exit\n";
 	return ret;
 }
 
@@ -329,6 +319,20 @@ ostream& operator<< (ostream& os, UniqueSocket&& s) {
 };
 
 namespace socket_ns {
+/*
+UniqueSocket::UniqueSocket(int domain, int type):
+    m_domain(domain), 
+    m_type(type), 
+    m_protocol(0), 
+    m_socket_fd(::socket(domain, type, 0)),  // sys/socket.h
+	m_block(true) {
+	cerr<<"UniqueSocket::UniqueSocket(int domain, int type)\n";
+	if(0!=errno) {
+		cerr<<strerror(errno);
+	}
+	cerr<<"UniqueSocket::UniqueSocket(int domain, int type)exit\n";
+}
+*/
 /*
 UniqueSocket::UniqueSocket(const UniqueSocket& s):
 	m_domain(s.m_domain),

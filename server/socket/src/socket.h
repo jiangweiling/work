@@ -11,8 +11,7 @@ private:
 	shared_ptr<UniqueSocket> m_socket_ptr;
 public:
     Socket();
-    Socket(int domain, int type, int protocol);
-    Socket(int domain, int type);
+    Socket(int domain, int type, int protocol=0);
     Socket(int socket_fd);
 
 	Socket(const Socket& s);
@@ -20,20 +19,17 @@ public:
 	Socket& operator=(const Socket& s);
 	Socket& operator=(Socket&& s);
 
-    int bind(const char* ip, unsigned short int port);
-    int bind(const string& ip, unsigned short int port);
-    int bind(string&& ip, unsigned short int port);
-    int bind(const string& ip);
-    int bind(string&& ip);
-    int bind(const char* ip);
+    int bind(const char* ip, unsigned short int port = 0);
+    int bind(const string& ip, unsigned short int port = 0);
+    int bind(string&& ip, unsigned short int port = 0);
     int connect(const char* ip, unsigned short int port);
     int connect(const string& ip, unsigned short int port);
     int connect(string&& ip, unsigned short int port);
-    int listen(int backlog);
-    int listen();
+    int listen(int backlog = 10);
     Socket accept();
 	int setblocking(bool block);
 	bool block();
+    int send(const char* data) const;
     int send(const string& data) const;
     int send(string&& data) const;
     int recv(string& data) const;

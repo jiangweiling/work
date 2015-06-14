@@ -6,12 +6,17 @@
 #include <fcntl.h>
 #include <unistd.h> 
 #include <errno.h>
+#include <sys/epoll.h>
 
 #include <cstring> 
 #include <utility> 
 #include <string> 
 #include <memory>
 #include <iostream>
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <chrono>
 
 
 namespace socket_ns {
@@ -24,8 +29,11 @@ using std::endl;          // iostream
 using std::memset;        // cstring
 using std::memcpy;        // cstring
 using std::move;          // utility
-using std::ostream;       //iostream
-using std::shared_ptr;    //memory
+using std::ostream;       // iostream
+using std::shared_ptr;    // memory
+using std::queue;         // queue
+using std::mutex;         // mutex
+using std::lock_guard;     // mutex
 
 const int af_inet = AF_INET;           // sys/socket.h
 const int sock_stream = SOCK_STREAM;   // sys/socket.h
