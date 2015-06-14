@@ -3,6 +3,7 @@
 #include <thread>
 #include <chrono>
 #include "server.h"
+#include "socket_epoll.h"
 
 using std::cout;
 using std::cerr;
@@ -10,24 +11,18 @@ using std::endl;
 using std::string;
 using std::thread;
 using namespace socket_ns;
-void print(Server* s){
-	for(int i = 0; i < 30; ++i){
-		cout<<"i="<<i<<endl;
-		if(!s->socket_empty()) {
-			Socket sock = s->socket_pop();
-			cout<<sock<<endl;
-		}
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
-};
 int main() {
-	Server& s = Server::get_server();
-	auto bg = [&s](){s.run();};
-	thread t(bg);
-	thread t1(print,&s);
-	t.join();
-	t1.join();
-	//t.detach();
-	std::this_thread::sleep_for(std::chrono::seconds(30));
+	SocketEpoll se;	
+	Server& server = Server::get_server();
+	auto server_bg = [&server](){server.run();};
+	thread server_t(server_bg);
+	for(int i=0; i < 6000; ++i) {
+		while(!server.socket_empty()){
+			se.add(server.socket_pop());
+		}
+		se.wait(20000);
+	}
+	server_t.join();
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	return 0;
 }

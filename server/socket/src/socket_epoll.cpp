@@ -48,8 +48,10 @@ SocketEpoll::~SocketEpoll() {
 	cerr<<"SocketEpoll::~SocketEpoll()exit\n";
 }
 
-int SocketEpoll::add(const Socket& s) {
+int SocketEpoll::add(Socket& s) {
 	cerr<<"int SocketEpoll::add(const Socket& s)\n";
+	lock_guard<mutex> lck(m_mutex);
+	s.setblocking(false);
 	epoll_event_t e;
 	e.data.fd = s.get_fd();
 	e.events = socket_event; // static const int SocektEpoll::socket_event
@@ -57,30 +59,55 @@ int SocketEpoll::add(const Socket& s) {
 	if(errno) {
 		cerr<<strerror(errno)<<endl;
 	}
+	m_socket_umap.insert({s.get_fd(),s});
 	cerr<<"int SocketEpoll::add(const Socket& s)exit\n";
 	return ret;
 }
-int SocketEpoll::remove(const Socket& s) {
+int SocketEpoll::add(Socket&& s) {
+	return add(s);
+}
+int SocketEpoll::remove(Socket& s) {
+	lock_guard<mutex> lck(m_mutex);
 	cerr<<"int SocketEpoll::remove(const Socket& s)\n";
 	epoll_event_t e;
 	e.data.fd = s.get_fd();
 	e.events = socket_event; // static const int SocektEpoll::socket_event
 	int ret = epoll_ctl(m_epfd, EPOLL_CTL_DEL, e.data.fd, &e); // sys/epoll.h
+	s.setblocking(false);
 	if(errno) {
 		cerr<<strerror(errno)<<endl;
 	}
+	m_socket_umap.erase(s.get_fd());
 	cerr<<"int SocketEpoll::remove(const Socket& s)exit\n";
 	return ret;
 }
+int SocketEpoll::remove(Socket&& s) {
+	return remove(s);
+}
 
-int SocketEpoll::wait(int timeout) {
+vector<Socket> SocketEpoll::wait(int timeout) {
+	lock_guard<mutex> lck(m_mutex);
 	cerr<<"int SocketEpoll::wait(int timeout)\n";
 	int n = epoll_wait(m_epfd, m_event_ptr, m_size, timeout); // sys/epoll.h
 	if(errno) {
 		cerr<<strerror(errno)<<endl;
 	}
+	vector<Socket> readable;
+	if(n > 0){
+		readable.reserve(n);
+		for(int i=0; i < n; ++i) {
+			if(m_event_ptr[i].events & socket_readable) {
+				Socket s = m_socket_umap[m_event_ptr[i].data.fd];
+				cout<<s<<endl;
+				string data;
+				s.recv(data);
+				cout<<"data: "<<data<<endl;
+				readable.push_back(move(s));
+			}
+		}
+	}
 	cerr<<"int SocketEpoll::wait(int timeout)exit\n";
-	return n;
+	return move(readable);
 }
 
 };

@@ -17,6 +17,8 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <unordered_map>
+#include <vector>
 
 
 namespace socket_ns {
@@ -33,7 +35,10 @@ using std::ostream;       // iostream
 using std::shared_ptr;    // memory
 using std::queue;         // queue
 using std::mutex;         // mutex
-using std::lock_guard;     // mutex
+using std::lock_guard;    // mutex
+using std::unordered_map; // unordered_map   
+using std::vector;        // vector
+
 
 const int af_inet = AF_INET;           // sys/socket.h
 const int sock_stream = SOCK_STREAM;   // sys/socket.h
