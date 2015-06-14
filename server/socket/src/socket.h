@@ -9,10 +9,12 @@ namespace socket_ns {
 class Socket {
 private:
 	shared_ptr<UniqueSocket> m_socket_ptr;
+    Socket(int socket_fd);
 public:
     Socket();
     Socket(int domain, int type, int protocol=0);
-    Socket(int socket_fd);
+	static unordered_map<int, shared_ptr<UniqueSocket>> fd_umap;
+	~Socket();
 
 	Socket(const Socket& s);
 	Socket(Socket&& s);

@@ -1,6 +1,8 @@
 #include "socket.h"
 namespace socket_ns {
 
+unordered_map<int, shared_ptr<UniqueSocket>> Socket::fd_umap;
+
 Socket::Socket():
 	m_socket_ptr(nullptr) {  
 	//m_socket_ptr(new UniqueSocket()) {  
@@ -10,15 +12,27 @@ Socket::Socket():
 
 Socket::Socket(int domain, int type, int protocol):
 	m_socket_ptr(new UniqueSocket(domain, type, protocol)) {
+	//fd_umap.insert({get_fd(), m_socket_ptr});
 	//cerr<<"Socket(int,int,int)\n";
 	//cerr<<"Socket(int,int,int)exit\n";
 }
 
-
 Socket::Socket(int socket_fd):
 	m_socket_ptr(new UniqueSocket(socket_fd)){
+/*
+	if(fd_umap.find(socket_fd)) {
+		m_socket_ptr = fd_umap[socket_fd];
+	}
+	else {
+		m_socket_ptr = (new UniqueSocket(socket_fd));
+		fd_umap.insert({socket_fd, m_socket_ptr});
+	}
+*/
 	//cerr<<"Socket(int)\n";
 	//cerr<<"Socket(int)exit\n";
+}
+
+Socket::~Socket() {
 }
 
 Socket::Socket(const Socket& s):

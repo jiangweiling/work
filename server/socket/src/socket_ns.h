@@ -19,6 +19,7 @@
 #include <chrono>
 #include <unordered_map>
 #include <vector>
+#include <functional>
 
 
 namespace socket_ns {
@@ -38,6 +39,7 @@ using std::mutex;         // mutex
 using std::lock_guard;    // mutex
 using std::unordered_map; // unordered_map   
 using std::vector;        // vector
+using std::hash;          // functional
 
 
 const int af_inet = AF_INET;           // sys/socket.h
