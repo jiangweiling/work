@@ -24,7 +24,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 build : $(OBJS)
 	cp ./*.h ../include/socket
 	rm -f $(LIB_DIR)/libsocket.a
-	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/unique_socket.o $(OBJ_DIR)/socket_addr.o
+	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/unique_socket.o $(OBJ_DIR)/socket_addr.o $(OBJ_DIR)/socket.o
 
 .PHONY : clean cleanall
 clean:

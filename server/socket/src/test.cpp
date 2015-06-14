@@ -11,8 +11,6 @@ int main() {
 	UniqueSocket s;	
 	cout<<s<<endl;
 	cout<<"block:"<<s.block()<<endl;
-	s.setblocking(false);
-	cout<<"block:"<<s.block()<<endl;
 	s.bind("127.0.0.1", 8888);
 	s.listen(5);
 	s.accept();

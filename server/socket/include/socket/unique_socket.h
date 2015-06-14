@@ -38,11 +38,11 @@ public:
     int connect(string&& ip, unsigned short int port);
     int listen(int backlog);
     int listen();
-    UniqueSocket accept();
+    int accept();
 	int setblocking(bool block);
 	bool block();
+    int send(const char* data) const;
     int send(const string& data) const;
-    int send(string&& data) const;
     int recv(string& data) const;
 	int get_fd() const;
     Address getsockname() const;

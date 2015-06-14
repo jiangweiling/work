@@ -8,17 +8,17 @@ namespace socket_ns {
 
 class Socket {
 private:
-	shared_ptr<UniqueSocket> socket_ptr;
+	shared_ptr<UniqueSocket> m_socket_ptr;
 public:
     Socket();
     Socket(int domain, int type, int protocol);
     Socket(int domain, int type);
     Socket(int socket_fd);
 
-	Socket(const UniqueSocket& s) = delete;
-	Socket(UniqueSocket&& s);
-	Socket& operator=(const UniqueSocket& s) = delete;
-	Socket& operator=(UniqueSocket&& s);
+	Socket(const Socket& s);
+	Socket(Socket&& s);
+	Socket& operator=(const Socket& s);
+	Socket& operator=(Socket&& s);
 
     int bind(const char* ip, unsigned short int port);
     int bind(const string& ip, unsigned short int port);
@@ -40,6 +40,7 @@ public:
 	int get_fd() const;
     Address getsockname() const;
     Address getpeername() const;
+	shared_ptr<UniqueSocket> get_socket_ptr() const;
 };
 
 };
