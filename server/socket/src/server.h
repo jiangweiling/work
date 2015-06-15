@@ -22,11 +22,12 @@ private:
 	Server(string&& ip, unsigned short int port, int backlog);
 	Server& operator= (Server&& s);
 	void socket_push(const Socket& s);
+
 public:
 	Server& operator= (const Server& s) = delete;
 	Server(const Server& s) = delete;
-	static Server& get_server(const string& ip, unsigned short int port, int backlog);
-	static Server& get_server(string&& ip, unsigned short int port, int backlog);
+	static Server& get_server(const string& ip, unsigned short int port, int backlog=10);
+	static Server& get_server(string&& ip, unsigned short int port, int backlog=10);
 	static Server& get_server();
 	Socket socket_pop();
 	bool socket_empty();

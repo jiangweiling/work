@@ -25,8 +25,10 @@ public:
 	~SocketEpoll();
 	int add(Socket& s);
 	int add(Socket&& s);
+	int add(vector<Socket> ss);
 	int remove(Socket& s);
 	int remove(Socket&& s);
+	int remove(vector<Socket> ss);
 	vector<Socket> wait(int timeout = -1); 
 	//timeout超时参数，单位毫秒，-1表示系统自行设置不确定的超时参数,0表示立刻返回
 	SocketEpoll& operator= (const SocketEpoll& se) = delete;

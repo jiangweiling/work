@@ -9,12 +9,10 @@ namespace socket_ns {
 class Socket {
 private:
 	shared_ptr<UniqueSocket> m_socket_ptr;
-    Socket(int socket_fd);
 public:
-    Socket();
+    Socket(shared_ptr<UniqueSocket> socket_ptr=nullptr);
     Socket(int domain, int type, int protocol=0);
-	static unordered_map<int, shared_ptr<UniqueSocket>> fd_umap;
-	~Socket();
+    Socket(int socket_fd);
 
 	Socket(const Socket& s);
 	Socket(Socket&& s);
@@ -34,7 +32,7 @@ public:
     int send(const char* data) const;
     int send(const string& data) const;
     int send(string&& data) const;
-    int recv(string& data) const;
+    bool recv(string& data) const;
 	int get_fd() const;
     Address getsockname() const;
     Address getpeername() const;
