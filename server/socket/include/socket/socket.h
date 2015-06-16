@@ -11,13 +11,16 @@ private:
 	shared_ptr<UniqueSocket> m_socket_ptr;
 public:
     Socket();
+    Socket(shared_ptr<UniqueSocket> socket_ptr);
     Socket(int domain, int type, int protocol=0);
     Socket(int socket_fd);
-
 	Socket(const Socket& s);
 	Socket(Socket&& s);
+
 	Socket& operator=(const Socket& s);
 	Socket& operator=(Socket&& s);
+
+	~Socket();
 
     int bind(const char* ip, unsigned short int port = 0);
     int bind(const string& ip, unsigned short int port = 0);
@@ -29,10 +32,11 @@ public:
     Socket accept();
 	int setblocking(bool block);
 	bool block();
+	void close();
     int send(const char* data) const;
     int send(const string& data) const;
     int send(string&& data) const;
-    int recv(string& data) const;
+    bool recv(string& data) const;
 	int get_fd() const;
     Address getsockname() const;
     Address getpeername() const;

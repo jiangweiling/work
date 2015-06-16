@@ -15,10 +15,6 @@ UniqueSocket::UniqueSocket():
 		cerr<<"UniqueSocket::UniqueSocket()\n";
 		cerr<<strerror(errno)<<endl;
 	}
-	else{
-		unique_lock<mutex> lck(mtx);
-		fd_socket_umap.insert({m_socket_fd, shared_ptr<UniqueSocket>(this)});
-	}
 	//cerr<<"UniqueSocket::UniqueSocket()exit\n";
 }
 
@@ -32,10 +28,6 @@ UniqueSocket::UniqueSocket(int domain, int type, int protocol):
 	if(errno) {
 		cerr<<"UniqueSocket::UniqueSocket(int domain, int type, int protocol)\n";
 		cerr<<strerror(errno)<<endl;
-	}
-	else{
-		unique_lock<mutex> lck(mtx);
-		fd_socket_umap.insert({m_socket_fd, shared_ptr<UniqueSocket>(this)});
 	}
 	//cerr<<"UniqueSocket::UniqueSocket(int domain, int type, int protocol)exit\n";
 }
@@ -53,10 +45,6 @@ UniqueSocket::UniqueSocket(int socket_fd):
 		cerr<<"UniqueSocket::UniqueSocket(int socket_fd)\n";
 		cerr<<strerror(errno)<<endl;
 	}
-	else{
-		unique_lock<mutex> lck(mtx);
-		fd_socket_umap.insert({m_socket_fd, shared_ptr<UniqueSocket>(this)});
-	}
 	//cerr<<"UniqueSocket::UniqueSocket(int socket_fd)exit\n";
 }
 
@@ -64,11 +52,26 @@ shared_ptr<UniqueSocket> UniqueSocket::make_shared(int socket_fd) {
 	//cerr<<"shared_ptr<UniqueSocket> UniqueSocket::make_shared(int socket_fd)\n";
 	unique_lock<mutex> lck(mtx); //initial lck, and lck lock() automatically
 	if( fd_socket_umap.end()==fd_socket_umap.find(socket_fd) ) {
-		lck.unlock();
-		return shared_ptr<UniqueSocket>(new UniqueSocket(socket_fd));
+		auto* ptr = new UniqueSocket(socket_fd); 
+		fd_socket_umap[socket_fd] = shared_ptr<UniqueSocket>(ptr);
 	}
 	//cerr<<"shared_ptr<UniqueSocket> UniqueSocket::make_shared(int socket_fd)exit\n";
 	return fd_socket_umap[socket_fd];
+}
+
+shared_ptr<UniqueSocket> UniqueSocket::make_shared(int domain, int type, int protocol){
+	unique_lock<mutex> lck(mtx); //initial lck, and lck lock() automatically
+	auto *ptr = new UniqueSocket(domain, type, protocol);
+	shared_ptr<UniqueSocket> socket_ptr(ptr);
+	fd_socket_umap[ptr->get_fd()] = socket_ptr;
+	return move(socket_ptr);
+}
+shared_ptr<UniqueSocket> UniqueSocket::make_shared(){
+	unique_lock<mutex> lck(mtx); //initial lck, and lck lock() automatically
+	auto *ptr = new UniqueSocket();
+	shared_ptr<UniqueSocket> socket_ptr(ptr);
+	fd_socket_umap[ptr->get_fd()] = socket_ptr;
+	return move(socket_ptr);
 }
 void UniqueSocket::rm_usocket(int socket_fd) {
 	cerr<<"void UniqueSocket::rm_usocket(int socket_fd)\n";
@@ -133,6 +136,7 @@ int UniqueSocket::bind(const char* ip, unsigned short int port) {
 			addr.get_sockaddr_ptr(), 
 			addr.get_sockaddr_size()); 
     getsockaddr();
+	cout<<m_sock_addr<<endl;
 	if(0!=ret || errno) {
 		cerr<<"int UniqueSocket::bind(const char* ip, unsigned short int port)\n";
 		cerr<<*this<<endl;
@@ -250,20 +254,24 @@ Address UniqueSocket::getpeername() const {
     return m_peer_addr.get_address();
 }
 
-int UniqueSocket::send(const char* data) const{
-	//cerr<<"int UniqueSocket::send(const char* data) const\n";
-	int len = strlen(data); // unsigned int -> int
-	int ret = ::send(m_socket_fd, data, len+1, 0); // sys/socket.h
-	if(len < 0 || ret != len || errno) {
-		cerr<<"int UniqueSocket::send(const char* data) const\n";
+int UniqueSocket::send(const void* data, unsigned int size) const{
+	cerr<<"int UniqueSocket::send(const void* data, unsigned int size) const\n";
+	int ret = ::send(m_socket_fd, data, size, 0); // sys/socket.h
+	if(errno) {
+		cerr<<"int UniqueSocket::send(const void* data, unsigned int size) const\n";
 		cerr<<strerror(errno)<<endl;	
 	}
-	//cerr<<"int UniqueSocket::send(const char* data) const exit\n";
+	cerr<<"int UniqueSocket::send(const void* data, unsigned int size) const exit\n";
     return ret;
 }
 
+int UniqueSocket::send(const char* data) const{
+	unsigned int size = strlen(data);
+	return send(data, size);
+}
+
 int UniqueSocket::send(const string& data) const{
-	return send(data.c_str());
+	return send(data.c_str(), data.size());
 }
 
 bool UniqueSocket::recv(string& data) const {
@@ -304,19 +312,14 @@ UniqueSocket::~UniqueSocket() {
 }
 int UniqueSocket::close() {
 	//cerr<<"int UniqueSocket::close()\n";
-    if (m_socket_fd == -1) {
+    if (m_socket_fd < 0) {
         return -1;
     }
 	int ret = ::close(m_socket_fd); // unistd.h return 0 on success
 	m_socket_fd = -1;
-	/*
-	if(-1!=ret && !errno) {
-		unique_lock<mutex> lck(mtx);
-		fd_socket_umap.erase(m_socket_fd);
-	}
-	*/
 	if(errno){
 		cerr<<"int UniqueSocket::close()\n";
+		cerr<<"m_socket_fd : "<<m_socket_fd<<endl;
 		cerr<<strerror(errno)<<endl;	
 	}
 	//cerr<<"int UniqueSocket::close()exit\n";
@@ -388,61 +391,4 @@ ostream& operator<< (ostream& os, UniqueSocket&& s) {
 	return os;
 }
 
-};
-
-namespace socket_ns {
-/*
-UniqueSocket::UniqueSocket(int domain, int type):
-    m_domain(domain), 
-    m_type(type), 
-    m_protocol(0), 
-    m_socket_fd(::socket(domain, type, 0)),  // sys/socket.h
-	m_block(true) {
-	cerr<<"UniqueSocket::UniqueSocket(int domain, int type)\n";
-	if(errno) {
-		cerr<<strerror(errno)<<endl;
-	}
-	cerr<<"UniqueSocket::UniqueSocket(int domain, int type)exit\n";
-}
-*/
-/*
-UniqueSocket::UniqueSocket(const UniqueSocket& s):
-	m_domain(s.m_domain),
-	m_type(s.m_type),
-	m_protocol(s.m_protocol),
-	m_socket_fd(s.m_socket_fd),
-	m_block(s.m_block),
-	m_peer_addr(s.m_peer_addr),
-	m_sock_addr(s.m_sock_addr){
-	cerr<<"UniqueSocket(const UniqueSocket&)\n";
-	cerr<<"UniqueSocket(const UniqueSocket&)exit\n";
-}
-*/
-/*
-UniqueSocket& UniqueSocket::operator= (const UniqueSocket& s) {
-	cerr<<"operator=(const UniqueSocket&)\n";
-	m_domain = s.m_domain;
-	m_type = s.m_type;
-	m_protocol = s.m_protocol;
-	m_socket_fd = s.m_socket_fd;
-	m_block = s.m_block;
-	m_peer_addr = s.m_peer_addr;
-	m_sock_addr = s.m_sock_addr;
-	return *this;
-}
-
-*/
-/*
-int UniqueSocket::bind(string&& ip, unsigned short int port) {
-    return bind(ip.c_str(), port);
-}
-int UniqueSocket::bind(string&& ip) {
-    return bind(ip.c_str(), 0);
-}
-*/
-/*
-int UniqueSocket::connect(string&& ip, unsigned short int port) {
-    return connect(ip.c_str(), port);
-}
-*/
 };

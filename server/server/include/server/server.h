@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
-#include "socket.h"
-#include "socket_ns.h"
+#include <socket/socket.h>
+#include <socket_ns.h>
 
 namespace socket_ns {
 

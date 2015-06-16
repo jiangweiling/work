@@ -8,12 +8,12 @@ SocketEpoll::SocketEpoll(int size):
 	m_size(size),
 	m_epfd(epoll_create(m_size)),
 	m_event_ptr(new epoll_event_t[m_size]){
-	//cerr<<"SocketEpoll::SocketEpoll(int size)\n";
+	cerr<<"SocketEpoll::SocketEpoll(int size)\n";
 	if(errno) {
 		cerr<<"SocketEpoll::SocketEpoll(int size)\n";
 		cerr<<strerror(errno)<<endl;
 	}
-	//cerr<<"SocketEpoll::SocketEpoll(int size)exit\n";
+	cerr<<"SocketEpoll::SocketEpoll(int size)exit\n";
 }
 
 SocketEpoll::SocketEpoll(SocketEpoll&& se):
@@ -25,7 +25,6 @@ SocketEpoll::SocketEpoll(SocketEpoll&& se):
 		cerr<<"SocketEpoll::SocketEpoll(SocketEpoll&& se)\n";
 		cerr<<strerror(errno)<<endl;
 	}
-	se.m_epfd = -1;
 	se.m_event_ptr = nullptr;
 	//cerr<<"SocketEpoll::SocketEpoll(SocketEpoll&& se)exit\n";
 }
@@ -36,7 +35,6 @@ SocketEpoll& SocketEpoll::operator= (SocketEpoll&& se){
 	m_size = se.m_size;
 	m_epfd = se.m_epfd;
 	m_event_ptr = se.m_event_ptr;
-	se.m_epfd = -1;
 	se.m_event_ptr = nullptr;
 	//cerr<<"SocketEpoll& SocketEpoll::operator= (SocketEpoll&& se)exit\n";
 	return *this;
@@ -78,9 +76,9 @@ int SocketEpoll::add(vector<Socket> ss) {
 	return ret;
 }
 
-int SocketEpoll::remove(Socket& s) {
-	unique_lock<mutex> lck(m_mutex);
+int SocketEpoll::remove(Socket& s, bool close) {
 	//cerr<<"int SocketEpoll::remove(const Socket& s)\n";
+	unique_lock<mutex> lck(m_mutex);
 	if(m_socket_umap.end() == m_socket_umap.find(s.get_fd())){
 		cerr<<"int SocketEpoll::remove(const Socket& s)\n";
 		cerr<<"socket fd "<<s.get_fd()<<" was not registered by SocketEpoll\n";
@@ -90,23 +88,28 @@ int SocketEpoll::remove(Socket& s) {
 	e.data.fd = s.get_fd();
 	e.events = socket_event; // static const int SocektEpoll::socket_event
 	int ret = epoll_ctl(m_epfd, EPOLL_CTL_DEL, e.data.fd, &e); // sys/epoll.h
-	s.setblocking(false);
 	if(errno) {
 		cerr<<"int SocketEpoll::remove(const Socket& s)\n";
 		cerr<<strerror(errno)<<endl;
+	}
+	if(close){
+		s.close();
+	}
+	else{
+		s.setblocking(false);
 	}
 	m_socket_umap.erase(s.get_fd());
 	//cerr<<"int SocketEpoll::remove(const Socket& s)exit\n";
 	return ret;
 }
 
-int SocketEpoll::remove(Socket&& s) {
-	return remove(s);
+int SocketEpoll::remove(Socket&& s, bool close) {
+	return remove(s, close);
 }
-int SocketEpoll::remove(vector<Socket> ss) {
+int SocketEpoll::remove(vector<Socket> ss, bool close) {
 	int ret = 0;
 	for(auto& s : ss) {
-		ret += remove(s);
+		ret += remove(s, close);
 	}
 	return ret;
 }

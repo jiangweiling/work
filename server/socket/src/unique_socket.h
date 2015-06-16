@@ -13,17 +13,19 @@ private:
 	bool m_block;
     SocketAddr m_sock_addr; //the socket’s own address
     SocketAddr m_peer_addr; //the remote connected address
-	static unordered_map<int, shared_ptr<UniqueSocket>> fd_socket_umap;
 	static mutex mtx;
 private:
     void getsockaddr();
     void getpeeraddr();
 public:
+	static unordered_map<int, shared_ptr<UniqueSocket>> fd_socket_umap;
     UniqueSocket();
     UniqueSocket(int domain, int type, int protocol=0);
     UniqueSocket(int socket_fd);
 
 	static shared_ptr<UniqueSocket> make_shared(int socket_fd);
+	static shared_ptr<UniqueSocket> make_shared(int domain, int type, int protocol=0);
+	static shared_ptr<UniqueSocket> make_shared();
 	static void rm_usocket(int socket_fd);
 
 	UniqueSocket(const UniqueSocket& s) = delete;
@@ -46,6 +48,7 @@ public:
     int accept();
 	int setblocking(bool block);
 	bool block();
+    int send(const void* data, unsigned int size) const;
     int send(const char* data) const;
     int send(const string& data) const;
     bool recv(string& data) const;

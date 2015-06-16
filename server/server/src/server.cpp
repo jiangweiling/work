@@ -4,8 +4,8 @@ namespace socket_ns {
 
 bool Server::initial = false;
 Server Server::server;
-
 Server::Server()=default;
+/*
 Server::Server(const string& ip, unsigned short int port, int backlog):
 	m_ip(ip),
 	m_port(port),
@@ -33,11 +33,8 @@ Server& Server::operator= (Server&& s) {
 	//cerr<<"Server& Server::operator= (Server&& s)exit\n";
 	return *this;
 }
-};
-
-
-namespace socket_ns {
-
+*/
+/*
 Server& Server::get_server(const string& ip, unsigned short int port, int backlog) {
 	//cerr<<"Server& Server::get_server(const string& ip, unsigned short int port, int backlog)\n";
 	if(!initial) { //socket_ns::Server::initial
@@ -60,7 +57,8 @@ Server& Server::get_server(string&& ip, unsigned short int port, int backlog) {
 Server& Server::get_server() {
 	return get_server("127.0.0.1", 8888, 10);
 }
-
+*/
+/*
 void Server::socket_push(const Socket& s) {
 	//cerr<<"void Server::socket_push(const Socket& s)\n";
 	unique_lock<mutex> lck(m_mutex);
@@ -113,5 +111,6 @@ int Server::run(){
 	//cerr<<"int Server::run()exit\n";
 	return 0;
 }
+*/
 
 };

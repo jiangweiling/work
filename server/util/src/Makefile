@@ -1,18 +1,21 @@
 CXX = g++
 #STD =
 STD = -std=c++11
-INCLUDE = -I./leveldb/include -I./socket/include
+INCLUDE = -I.
 CXXFLAGS = $(STD) -g -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L./leveldb/lib -L./socket/lib -lleveldb -lsocket -lpthread
+LIBS = -L. 
 LDFLAGS = $(STD) $(LIBS)
 
-SRC_DIR = ./src
+TARGET = test
+SRC_DIR = .
 OBJ_DIR = ./objs
-TARGET = $(OBJ_DIR)/test
+LIB_DIR = ../lib
+HEADER_DIR = ../include/util
 
+MAKE_HEADER_DIR := $(shell mkdir -p $(HEADER_DIR))
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))
-#MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
+MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
 OBJS = $(addsuffix .o, $(subst $(SRC_DIR),$(OBJ_DIR),$(basename $(wildcard $(SRC_DIR)/*.cpp))))
 
 $(TARGET): $(OBJS)
@@ -21,6 +24,9 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 build : $(OBJS)
+	cp ./*.h $(HEADER_DIR)
+	rm -f $(LIB_DIR)/libutil.a
+	ar -r $(LIB_DIR)/libutil.a $(OBJ_DIR)/util.o
 
 .PHONY : clean cleanall
 clean:
@@ -30,5 +36,8 @@ clean:
 cleanall:
 	rm -f *~
 	rm -f $(SRC_DIR)/*~
-	rm -rf $(OBJ_DIR)
+	rm -f $(OBJ_DIR)/*
+	rmdir $(OBJ_DIR)
 	rm -f $(TARGET)
+	rm -f $(LIB_DIR)/*
+	rmdir $(LIB_DIR)

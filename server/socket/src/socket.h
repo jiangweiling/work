@@ -10,7 +10,8 @@ class Socket {
 private:
 	shared_ptr<UniqueSocket> m_socket_ptr;
 public:
-    Socket(shared_ptr<UniqueSocket> socket_ptr=nullptr);
+    Socket();
+    Socket(shared_ptr<UniqueSocket> socket_ptr);
     Socket(int domain, int type, int protocol=0);
     Socket(int socket_fd);
 	Socket(const Socket& s);
@@ -18,6 +19,8 @@ public:
 
 	Socket& operator=(const Socket& s);
 	Socket& operator=(Socket&& s);
+
+	~Socket();
 
     int bind(const char* ip, unsigned short int port = 0);
     int bind(const string& ip, unsigned short int port = 0);

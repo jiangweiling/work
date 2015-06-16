@@ -1,17 +1,17 @@
 CXX = g++
 #STD =
 STD = -std=c++11
-INCLUDE = -I../..
+INCLUDE = -I../.. -I. -I../../socket/include
 CXXFLAGS = $(STD) -g -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L. 
+LIBS = -L../../socket/lib -lsocket
 LDFLAGS = $(STD) $(LIBS)
 
 TARGET = test
 SRC_DIR = .
 OBJ_DIR = ./objs
 LIB_DIR = ../lib
-HEADER_DIR = ../include/socket
+HEADER_DIR = ../include/server
 
 MAKE_HEADER_DIR := $(shell mkdir -p $(HEADER_DIR))
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))
@@ -25,8 +25,8 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 
 build : $(OBJS)
 	cp ./*.h $(HEADER_DIR)
-	rm -f $(LIB_DIR)/libsocket.a
-	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/socket.o $(OBJ_DIR)/unique_socket.o $(OBJ_DIR)/socket_addr.o
+	rm -f $(LIB_DIR)/libserver.a
+	ar -r $(LIB_DIR)/libserver.a $(OBJ_DIR)/server.o
 
 .PHONY : clean cleanall
 clean:

@@ -1,21 +1,17 @@
 CXX = g++
-#STD =
 STD = -std=c++11
-INCLUDE = -I../..
-CXXFLAGS = $(STD) -g -Wall $(INCLUDE)
+#STD =
+INCLUDE = -I../socket/include
+CXXFLAGS = $(STD) -g -O2 -Wall $(INCLUDE)
 LD = $(CXX)
-LIBS = -L. 
+LIBS = -L../socket/lib -lsocket
 LDFLAGS = $(STD) $(LIBS)
 
 TARGET = test
 SRC_DIR = .
 OBJ_DIR = ./objs
-LIB_DIR = ../lib
-HEADER_DIR = ../include/socket
 
-MAKE_HEADER_DIR := $(shell mkdir -p $(HEADER_DIR))
 MAKE_OBJECT_DIR := $(shell mkdir -p $(OBJ_DIR))
-MAKE_LIB_DIR := $(shell mkdir -p $(LIB_DIR))
 OBJS = $(addsuffix .o, $(subst $(SRC_DIR),$(OBJ_DIR),$(basename $(wildcard $(SRC_DIR)/*.cpp))))
 
 $(TARGET): $(OBJS)
@@ -24,9 +20,6 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 build : $(OBJS)
-	cp ./*.h $(HEADER_DIR)
-	rm -f $(LIB_DIR)/libsocket.a
-	ar -r $(LIB_DIR)/libsocket.a $(OBJ_DIR)/socket.o $(OBJ_DIR)/unique_socket.o $(OBJ_DIR)/socket_addr.o
 
 .PHONY : clean cleanall
 clean:
@@ -39,5 +32,3 @@ cleanall:
 	rm -f $(OBJ_DIR)/*
 	rmdir $(OBJ_DIR)
 	rm -f $(TARGET)
-	rm -f $(LIB_DIR)/*
-	rmdir $(LIB_DIR)
