@@ -47,6 +47,8 @@ const int sock_dgram = SOCK_DGRAM;     // sys/socket.h
 const int buf_size = 1024;
 
 typedef pair<string, unsigned short int> Address;
+typedef unordered_map<int,string> SocketStrUmap; 
+typedef unordered_map<int,vector<string>> SocketMsgUmap;
 
 };
 
