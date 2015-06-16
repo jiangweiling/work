@@ -70,6 +70,12 @@ shared_ptr<UniqueSocket> UniqueSocket::make_shared(int socket_fd) {
 	//cerr<<"shared_ptr<UniqueSocket> UniqueSocket::make_shared(int socket_fd)exit\n";
 	return fd_socket_umap[socket_fd];
 }
+void UniqueSocket::rm_usocket(int socket_fd) {
+	cerr<<"void UniqueSocket::rm_usocket(int socket_fd)\n";
+	unique_lock<mutex> lck(mtx); //initial lck, and lck lock() automatically
+	fd_socket_umap.erase(socket_fd);
+	cerr<<"void UniqueSocket::rm_usocket(int socket_fd)exit\n";
+}
 
 UniqueSocket::UniqueSocket(UniqueSocket&& s):
 	m_domain(s.m_domain),
@@ -135,20 +141,10 @@ int UniqueSocket::bind(const char* ip, unsigned short int port) {
 	//cerr<<"int UniqueSocket::bind(const char* ip, unsigned short int port)exit\n";
 	return ret;
 }
-
 int UniqueSocket::bind(const string& ip, unsigned short int port) {
     return bind(ip.c_str(), port);
 }
-
-int UniqueSocket::bind(string&& ip, unsigned short int port) {
-    return bind(ip.c_str(), port);
-}
-
 int UniqueSocket::bind(const string& ip) {
-    return bind(ip.c_str(), 0);
-}
-
-int UniqueSocket::bind(string&& ip) {
     return bind(ip.c_str(), 0);
 }
 
@@ -176,9 +172,6 @@ int UniqueSocket::connect(const string& ip, unsigned short int port) {
     return connect(ip.c_str(), port);
 }
 
-int UniqueSocket::connect(string&& ip, unsigned short int port) {
-    return connect(ip.c_str(), port);
-}
 
 int UniqueSocket::listen(int backlog) {
 	//cerr<<"int UniqueSocket::listen(int backlog)\n";
@@ -274,7 +267,7 @@ int UniqueSocket::send(const string& data) const{
 }
 
 bool UniqueSocket::recv(string& data) const {
-	cerr<<"int UniqueSocket::recv(string& data) const\n";
+	//cerr<<"int UniqueSocket::recv(string& data) const\n";
     char buffer[buf_size];
 	int ret = 0;
 	while(true){
@@ -286,8 +279,8 @@ bool UniqueSocket::recv(string& data) const {
 			while( -1==(len=::recv(m_socket_fd, buffer, buf_size, 0)) && EAGAIN!=errno );  // sys/socket.h
 		}
 		if(len > 0) {
-			cout<<len<<endl;
 			data.append(string(buffer,buffer+len));
+			ret += len;
 			if(len < buf_size){
 				break;
 			}
@@ -301,13 +294,13 @@ bool UniqueSocket::recv(string& data) const {
 		cerr<<"int UniqueSocket::recv(string& data) const\n";
 		cerr<<strerror(errno)<<endl;	
 	}
-	cerr<<"int UniqueSocket::recv(string& data) const exit\n";
+	//cerr<<"int UniqueSocket::recv(string& data) const exit\n";
     return bool(ret > 0);
 }
 UniqueSocket::~UniqueSocket() {
-	//cerr<<"UniqueSocket::~UniqueSocket()\n";
+	cerr<<"UniqueSocket::~UniqueSocket()\n";
     close();
-	//cerr<<"UniqueSocket::~UniqueSocket()exit\n";
+	cerr<<"UniqueSocket::~UniqueSocket()exit\n";
 }
 int UniqueSocket::close() {
 	//cerr<<"int UniqueSocket::close()\n";
@@ -315,11 +308,14 @@ int UniqueSocket::close() {
         return -1;
     }
 	int ret = ::close(m_socket_fd); // unistd.h return 0 on success
+	m_socket_fd = -1;
+	/*
 	if(-1!=ret && !errno) {
 		unique_lock<mutex> lck(mtx);
 		fd_socket_umap.erase(m_socket_fd);
 	}
-	else {
+	*/
+	if(errno){
 		cerr<<"int UniqueSocket::close()\n";
 		cerr<<strerror(errno)<<endl;	
 	}
@@ -434,6 +430,19 @@ UniqueSocket& UniqueSocket::operator= (const UniqueSocket& s) {
 	m_sock_addr = s.m_sock_addr;
 	return *this;
 }
-*/
 
+*/
+/*
+int UniqueSocket::bind(string&& ip, unsigned short int port) {
+    return bind(ip.c_str(), port);
+}
+int UniqueSocket::bind(string&& ip) {
+    return bind(ip.c_str(), 0);
+}
+*/
+/*
+int UniqueSocket::connect(string&& ip, unsigned short int port) {
+    return connect(ip.c_str(), port);
+}
+*/
 };

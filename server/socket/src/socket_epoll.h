@@ -19,7 +19,6 @@ private:
 	
 public:
 	SocketEpoll(int size = 256); 
-	//默认参数在函数声明处给出，在函数定义按照无默认参数方式定义函数
 	SocketEpoll(const SocketEpoll& se) = delete;
 	SocketEpoll(SocketEpoll&& se);
 	~SocketEpoll();

@@ -25,7 +25,7 @@ void epoll_test() {
 	SocketEpoll se;
 	for(int i=0; i < 60; ++i) {
 		while(!server.socket_empty()){
-			se.add(server.socket_pop());
+			se.add(server.socket_pop_all());
 		}
 		se.wait(2000);
 	}
@@ -39,9 +39,10 @@ void msghub_test() {
 	MsgHub& mh = MsgHub::get_msghub();
 	while(true){
 		while(!server.socket_empty()){
-			se.add(server.socket_pop());
+			se.add(server.socket_pop_all());
 		}
-		mh.push(se.wait(2000));
+		se.remove(mh.push(se.wait(2000)));
+		
 	}
 	t1.join();
 }

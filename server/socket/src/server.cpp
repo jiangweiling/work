@@ -5,6 +5,7 @@ namespace socket_ns {
 bool Server::initial = false;
 Server Server::server;
 
+Server::Server()=default;
 Server::Server(const string& ip, unsigned short int port, int backlog):
 	m_ip(ip),
 	m_port(port),
@@ -63,22 +64,33 @@ Server& Server::get_server() {
 void Server::socket_push(const Socket& s) {
 	//cerr<<"void Server::socket_push(const Socket& s)\n";
 	unique_lock<mutex> lck(m_mutex);
-	m_socket_queue.push(s);
+	m_sockets.push_back(s);
 	//cerr<<"void Server::socket_push(const Socket& s)exit\n";
 }
 
-Socket Server::socket_pop() {
-	//cerr<<"Socket Server::socket_pop()\n";
+Socket Server::socket_pop_one() {
+	//Socket Server::socket_pop_one()\n";
 	unique_lock<mutex> lck(m_mutex);
-	Socket s = m_socket_queue.front();
-	m_socket_queue.pop();
-	//cerr<<"Socket Server::socket_pop()exit\n";
-	return s;
+	Socket s;
+	if(!m_sockets.empty()){
+		s = m_sockets.front();
+		m_sockets.erase(m_sockets.begin());
+	}
+	//cSocket Server::socket_pop_one()exit\n";
+	return move(s);
+}
+vector<Socket> Server::socket_pop_all() {
+	//vector<Socket> Server::socket_pop_all()\n";
+	unique_lock<mutex> lck(m_mutex);
+	vector<Socket> ss;
+	m_sockets.swap(ss);
+	//vector<Socket> Server::socket_pop_all()exit\n";
+	return move(ss);
 }
 bool Server::socket_empty(){
 	//cerr<<"bool Server::socket_empty() const\n";
 	unique_lock<mutex> lck(m_mutex);
-	bool flag = m_socket_queue.empty();
+	bool flag = m_sockets.empty();
 	//cerr<<"bool Server::socket_empty() const exit\n";
 	return flag;
 }
@@ -95,7 +107,7 @@ int Server::run(){
 	cout<<"listen at address: "<<addr<<endl;
 	while(true) {
 		Socket s = m_socket.accept();
-		cout<<s<<endl;
+		cout<<"connection from "<<s<<endl;
 		socket_push(s);
 	}
 	//cerr<<"int Server::run()exit\n";

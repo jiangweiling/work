@@ -11,13 +11,13 @@ private:
 	unsigned short int m_port;
 	Socket m_socket;
 	int m_backlog;
-	queue<Socket> m_socket_queue;
+	vector<Socket> m_sockets;
 	mutex m_mutex;
 private:
 	static bool initial; 
 	static Server server;
 private:
-	Server()=default;
+	Server();
 	Server(const string& ip, unsigned short int port, int backlog);
 	Server(string&& ip, unsigned short int port, int backlog);
 	Server& operator= (Server&& s);
@@ -29,7 +29,8 @@ public:
 	static Server& get_server(const string& ip, unsigned short int port, int backlog=10);
 	static Server& get_server(string&& ip, unsigned short int port, int backlog=10);
 	static Server& get_server();
-	Socket socket_pop();
+	Socket socket_pop_one();
+	vector<Socket> socket_pop_all();
 	bool socket_empty();
 	int run();
 };

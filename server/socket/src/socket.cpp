@@ -20,12 +20,14 @@ Socket::Socket(int socket_fd):
 	//cerr<<"Socket(int)exit\n";
 }
 
-
+Socket::Socket(const Socket& s)=default;
+/*
 Socket::Socket(const Socket& s):
 	m_socket_ptr(s.m_socket_ptr){
 	//cerr<<"Socket(const Socket&)\n";
 	//cerr<<"Socket(const Socket&)exit\n";
 }
+*/
 
 Socket::Socket(Socket&& s):
 	m_socket_ptr(move(s.m_socket_ptr)){
@@ -33,12 +35,15 @@ Socket::Socket(Socket&& s):
 	//cerr<<"Socket(Socket&&)exit\n";
 }
 
+Socket& Socket::operator= (const Socket& s)=default;
+/*
 Socket& Socket::operator= (const Socket& s) {
 	//cerr<<"operator=(const Socket&)\n";
 	m_socket_ptr = s.m_socket_ptr;
 	//cerr<<"operator=(const Socket&)exit\n";
 	return *this;
 }
+*/
 Socket& Socket::operator= (Socket&& s) {
 	//cerr<<"operator=(Socket&&)\n";
 	m_socket_ptr = move(s.m_socket_ptr);
@@ -109,6 +114,26 @@ Socket Socket::accept() {
     return move(s);
 }
 
+int Socket::setblocking(bool block) {
+	//cerr<<"int Socket::setblocking(bool block)\n";
+	int ret = m_socket_ptr->setblocking(block);
+	//cerr<<"int Socket::setblocking(bool block) exit\n";
+	return ret;
+}
+
+bool Socket::block() {
+	//cerr<<"bool Socket::block()\n";
+	bool ret = m_socket_ptr->block();
+	//cerr<<"bool Socket::block()exit\n";
+	return ret;
+}
+
+void Socket::close() {
+	//cerr<<"int Socket::close()\n";
+	UniqueSocket::rm_usocket(m_socket_ptr->get_fd());
+	m_socket_ptr = nullptr;
+	//cerr<<"int Socket::close()exit\n";
+}
 int Socket::get_fd() const {
 	//cerr<<"int Socket::get_fd() const\n";
 	int m_socket_fd = m_socket_ptr->get_fd();
@@ -155,19 +180,6 @@ bool Socket::recv(string& data) const {
     return ret;
 }
 
-int Socket::setblocking(bool block) {
-	//cerr<<"int Socket::setblocking(bool block)\n";
-	int ret = m_socket_ptr->setblocking(block);
-	//cerr<<"int Socket::setblocking(bool block) exit\n";
-	return ret;
-}
-
-bool Socket::block() {
-	//cerr<<"bool Socket::block()\n";
-	bool ret = m_socket_ptr->block();
-	//cerr<<"bool Socket::block()exit\n";
-	return ret;
-}
 
 shared_ptr<UniqueSocket> Socket::get_socket_ptr() const{
 	return m_socket_ptr;

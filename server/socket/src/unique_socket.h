@@ -24,6 +24,7 @@ public:
     UniqueSocket(int socket_fd);
 
 	static shared_ptr<UniqueSocket> make_shared(int socket_fd);
+	static void rm_usocket(int socket_fd);
 
 	UniqueSocket(const UniqueSocket& s) = delete;
 	UniqueSocket(UniqueSocket&& s);
@@ -33,13 +34,13 @@ public:
 
     int bind(const char* ip, unsigned short int port);
     int bind(const string& ip, unsigned short int port);
-    int bind(string&& ip, unsigned short int port);
+    //int bind(string&& ip, unsigned short int port);
     int bind(const string& ip);
-    int bind(string&& ip);
+    //int bind(string&& ip);
     int bind(const char* ip);
     int connect(const char* ip, unsigned short int port);
     int connect(const string& ip, unsigned short int port);
-    int connect(string&& ip, unsigned short int port);
+    //int connect(string&& ip, unsigned short int port);
     int listen(int backlog);
     int listen();
     int accept();
